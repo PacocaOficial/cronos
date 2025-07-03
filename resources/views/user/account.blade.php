@@ -63,7 +63,7 @@
                 </div>
 
                 @php 
-                    $path = str_replace('../', "", $user->img_account);
+                    $path = config("app.pacoca_api_url") . "/" . auth()->user()->img_account;
 
                     if (file_exists($path)) {
                         $img_account = config("app.pacoca_api_url") . "/" .  $path;

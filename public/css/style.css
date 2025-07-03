@@ -24,7 +24,6 @@ input.form-control, textarea.form-control{
     display: flex!important;
     align-items: center;
     gap: 10px;
-    font-size: 20px;
 }
 
 .navbar .form-control#livro{
