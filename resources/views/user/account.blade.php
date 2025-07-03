@@ -37,9 +37,9 @@
                     <p>{{"@$user->user_name"}}</p>
 
                     @if(auth()->check() && $user->id == auth()->user()->id)
-                        <a target="_blank" href="{{config("app.pacoca_url")}}/conta" class="btn btn-yellow" style="width: 100%;">
+                        {{-- <a target="_blank" href="{{config("app.pacoca_url")}}/conta" class="btn btn-yellow" style="width: 100%;">
                             Editar
-                        </a>
+                        </a> --}}
                     @else
                     
                         @php
