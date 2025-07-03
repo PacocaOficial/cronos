@@ -28,8 +28,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title')</title>
     <link rel="shortcut icon" href="{{ asset('img/logo.png') }}" type="image/x-icon">
-    <link rel="stylesheet" href="{{ asset('css/style.css?v=21') }}">
-    <link rel="stylesheet" href="{{ asset('css/vars.css?v=21') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css?v=22') }}">
+    <link rel="stylesheet" href="{{ asset('css/vars.css?v=22') }}">
     <link rel="stylesheet" href="{{ asset('css/navbar-pc.css?v=21') }}">
      <script src="{{asset('lucide@0.511.0/dist/umd/lucide.min.js')}}"></script>
      <script src="https://unpkg.com/lucide@latest"></script>
