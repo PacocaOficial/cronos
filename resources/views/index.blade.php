@@ -4,7 +4,7 @@
     SE A VIDA
     NÃO É PROGRAMADA
     E AS MELHORES COISAS
-    NÃO TEM LÓGICA". 
+    NÃO TEM LÓGICA".  
     Alguém (algum ano)
 --}}
 
