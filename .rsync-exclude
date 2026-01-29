@@ -1,0 +1,32 @@
+/node_modules
+/public/hot
+/public/storage
+storage
+storage/*
+bootstrap/cache
+bootstrap/cache/*
+/vendor
+.env
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+public/img/img_account/*
+public/img/stories/*
+public/img/img_post/*
+public/img/group/*
+.vscode/
+.vscode/sftp.
+
+.env.*
+composer.lock
+*.pem
+# Ignore hidden files
+.* 
+
+# Ignore all logs
+*.log
+
+# Ignore temporary files
+*.tmp
