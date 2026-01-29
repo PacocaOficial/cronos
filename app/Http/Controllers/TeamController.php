@@ -33,6 +33,7 @@ class TeamController extends Controller
                 'users_teams.*',
                 'teams.*'
             )
+            ->limit(20)
             ->get();
 
         // 2. Obter os IDs dos usuários encontrados
@@ -65,6 +66,7 @@ class TeamController extends Controller
         $teamsQuery = DB::table('teams')
             ->join('users_teams', 'teams.id_teams', '=', 'users_teams.id_team')
             ->where('users_teams.id_user', auth()->id())
+            ->limit(10)
             ->select(
                 'users_teams.*',
                 'teams.*'
@@ -267,6 +269,7 @@ class TeamController extends Controller
             $messages = DB::table('messages_team')
                 ->where('id_team', $team->id_teams)
                 ->orderBy('created_at', 'desc')
+                ->limit(20)
                 ->get();
 
             // 2. Pega os usuários da conexão 'pacoca'

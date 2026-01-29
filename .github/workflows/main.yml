@@ -1,54 +1,61 @@
-name: prod
+name: Build & Deploy Laravel API (Sem Docker)
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
-    
-  workflow_dispatch:
 
 jobs:
-  deploy-production:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout do repositório
-      uses: actions/checkout@v2
+    - name: Checkout código
+      uses: actions/checkout@v3
 
-    - name: Install dependencies
-      uses: appleboy/ssh-action@v1.2.0
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
       with:
-        host: ${{ secrets.REMOTE_HOST }}
-        username: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.REMOTE_PORT }}
-        script: |
-            cd ${{secrets.TARGET_PRODUCTION}}
-            composer install --no-interaction --prefer-dist --optimize-autoloader
+        php-version: 8.2
+        extensions: mbstring, pdo_mysql, zip, gd
+        coverage: none
 
-    - name: Copiar arquivos para VPS
+    - name: Deploy via rsync
       uses: easingthemes/ssh-deploy@main
       with:
-        SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
-        ARGS: "-avz"
+        SSH_PRIVATE_KEY: ${{ secrets.EC2_PROD_PRIVATE_KEY }}
+        ARGS: "-avz --delete --exclude-from=.rsync-exclude"
         SOURCE: "./"
-        REMOTE_HOST: ${{secrets.REMOTE_HOST}}
-        REMOTE_USER: ${{secrets.REMOTE_USER}}
-        REMOTE_PORT: ${{secrets.REMOTE_PORT}}
-        TARGET: ${{secrets.TARGET_PRODUCTION}}
+        REMOTE_HOST: ${{ secrets.EC2_PROD_HOST }}
+        REMOTE_USER: ubuntu
+        REMOTE_PORT: 22
+        TARGET: "/var/www/cronos/backend"
 
-    - name: "Limpar cache"
-      uses: appleboy/ssh-action@v1.2.0
+    - name: Configurar GitHub token para Composer
+      run: composer config --global github-oauth.github.com ${{ secrets.PAT_GLOBAL_COMPONENTS }}
+
+    - name: Pós-deploy (EC2)
+      uses: appleboy/ssh-action@v0.1.5
       with:
-        host: ${{ secrets.REMOTE_HOST }}
-        username: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.REMOTE_PORT }}
+        host: ${{ secrets.EC2_PROD_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_PROD_PRIVATE_KEY }}
         script: |
-            cd ${{secrets.TARGET_PRODUCTION}}
-            php artisan cache:clear
-            php artisan config:clear
-            php artisan route:clear
-            php artisan view:clear
-            php artisan config:cache
+          cd /var/www/cronos/backend
+          sudo composer install --no-dev --optimize-autoloader
+
+          echo "Ajustando permissões..."
+          sudo chown -R www-data:www-data storage bootstrap/cache
+          sudo chmod -R 775 storage bootstrap/cache
+
+          echo "Rodando migrations..."
+          sudo php artisan migrate --force
+
+          echo "Limpando cache..."
+          sudo php artisan optimize:clear
+          sudo php artisan optimize
+
+          echo "Reiniciando serviços..."
+          sudo systemctl reload php8.2-fpm
+          sudo systemctl reload nginx
+
+          echo "✅ Deploy finalizado"
